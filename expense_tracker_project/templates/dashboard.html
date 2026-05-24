@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expense Tracker Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        function confirmDelete(id) {
+            if (confirm('Are you sure you want to delete this expense?')) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/delete/' + id;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>Expense Tracker</h1>
+                <p class="welcome-msg">Welcome back, <strong>{{ login }}</strong></p>
+            </div>
+            <div class="header-actions">
+                <a class="button button-primary" href="/add">Add Expense</a>
+                <a class="button button-secondary" href="/budgets">Manage Budgets</a>
+                <a class="button button-secondary" href="/export.csv">Export CSV</a>
+                <a class="button button-secondary" href="/logout">Logout</a>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-label">Total Spending</div>
+                <div class="stat-value">${{ "%.2f"|format(total) }}</div>
+            </div>
+            {% if category_stats %}
+            <div class="stat-card">
+                <div class="stat-label">Top Category</div>
+                <div class="stat-value">{{ category_stats[0]['category_name'] }}</div>
+                <div class="stat-subtext">${{ "%.2f"|format(category_stats[0]['total']) }}</div>
+            </div>
+            {% endif %}
+            <div class="stat-card">
+                <div class="stat-label">Total Transactions</div>
+                <div class="stat-value">{{ expenses|length }}</div>
+            </div>
+        </div>
+
+        {% if category_stats %}
+        <div class="breakdown-section">
+            <h2>Spending by Category</h2>
+            <div class="category-grid">
+                {% for stat in category_stats %}
+                <div class="category-item">
+                    <span class="category-name">{{ stat['category_name'] }}</span>
+                    <span class="category-amount">${{ "%.2f"|format(stat['total']) }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if budget_stats %}
+        <div class="breakdown-section">
+            <h2>Budget Usage</h2>
+            <div class="category-grid">
+                {% for budget in budget_stats %}
+                <div class="category-item">
+                    <span class="category-name">{{ budget['category_name'] }}</span>
+                    <span class="category-amount">${{ "%.2f"|format(budget['spent']) }} / ${{ "%.2f"|format(budget['monthly_limit']) }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="filter-section">
+            <h2>Filter Expenses</h2>
+            <form method="get" class="filter-form">
+                <div class="filter-group">
+                    <label for="category">Category</label>
+                    <select name="category" id="category">
+                        <option value="">All Categories</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat['id'] }}" {% if selected_category|string == cat['id']|string %}selected{% endif %}>{{ cat['category_name'] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="start_date">From Date</label>
+                    <input type="date" name="start_date" id="start_date" value="{{ start_date }}">
+                </div>
+                <div class="filter-group">
+                    <label for="end_date">To Date</label>
+                    <input type="date" name="end_date" id="end_date" value="{{ end_date }}">
+                </div>
+                <button type="submit" class="button button-primary">Apply Filters</button>
+                <a href="/dashboard" class="button button-secondary">Clear</a>
+            </form>
+        </div>
+
+        <h2>Your Expenses</h2>
+        {% if expenses %}
+        <div class="table-wrapper">
+            <table class="expenses-table">
+                <thead>
+                    <tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                    {% for expense in expenses %}
+                    <tr>
+                        <td>{{ expense[3] }}</td>
+                        <td>{{ expense[2] }}</td>
+                        <td><span class="category-badge">{{ expense[4] }}</span></td>
+                        <td class="amount">${{ "%.2f"|format(expense[1]) }}</td>
+                        <td class="actions">
+                            <a href="/edit/{{ expense[0] }}" class="action-btn edit-btn">Edit</a>
+                            <button onclick="confirmDelete({{ expense[0] }})" class="action-btn delete-btn">Delete</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state"><p>No expenses found. <a href="/add">Add your first expense</a></p></div>
+        {% endif %}
+    </div>
+</body>
+</html>
