@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>Register</h1>
+                <p class="subtitle">Create a new account</p>
+            </div>
+
+            {% if error %}
+            <div class="error-alert"><strong>Error:</strong> {{ error }}</div>
+            {% endif %}
+
+            <form method="post" class="login-form">
+                <div class="form-group">
+                    <label for="login">Username</label>
+                    <input type="text" id="login" name="login" placeholder="Choose a username" value="{{ login|default('') }}" required autofocus>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" value="{{ email|default('') }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Choose a password" required>
+                </div>
+                <div class="form-group">
+                    <label for="password_confirm">Confirm Password</label>
+                    <input type="password" id="password_confirm" name="password_confirm" placeholder="Confirm password" required>
+                </div>
+                <button type="submit" class="button button-primary">Create Account</button>
+            </form>
+
+            <div class="login-footer">
+                <p class="help-text">Already have an account? <a href="/">Sign in</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
