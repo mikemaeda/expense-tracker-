@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Expense</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-wrapper">
+            <h1>Edit Expense</h1>
+            <p class="subtitle">Update your expense details.</p>
+
+            {% if error %}
+            <div class="error-alert"><strong>Error:</strong> {{ error }}</div>
+            {% endif %}
+
+            <form method="post">
+                <div class="form-group">
+                    <label for="amount">Amount</label>
+                    <input id="amount" type="number" step="0.01" name="amount" value="{{ expense['amount'] }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <input id="description" type="text" name="description" value="{{ expense['description'] }}" maxlength="200" required>
+                </div>
+                <div class="form-group">
+                    <label for="expense_date">Date</label>
+                    <input id="expense_date" type="date" name="expense_date" value="{{ expense['expense_date'] }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="category_id">Category</label>
+                    <select id="category_id" name="category_id" required>
+                        {% for category in categories %}
+                        <option value="{{ category['id'] }}" {% if expense['category_id'] == category['id'] %}selected{% endif %}>{{ category['category_name'] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="button button-primary">Save Changes</button>
+            </form>
+
+            <div class="nav">
+                <a class="button button-secondary" href="/dashboard">Cancel</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
