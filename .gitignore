@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+expense_tracker.db
+*.db-wal
+*.db-shm
+.DS_Store
+.vscode/
+*.log
