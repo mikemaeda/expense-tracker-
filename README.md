@@ -48,41 +48,4 @@ https://expense-tracker-app-mauve-gamma.vercel.app
 
 The Vercel project is linked as `expense-tracker-app`.
 
-Vercel uses the root `api/index.py` entrypoint and root `requirements.txt` file. The app still stores data in SQLite; on Vercel it defaults to `/tmp/expense_tracker.db`, which is temporary serverless storage. That is fine for demos and class/project review, but a real long-lived app should move the database to hosted storage such as Vercel Postgres, Neon, Supabase, or Turso.
-
-## Environment variables
-
-Set values in `expense_tracker_project\.env`:
-
-- `MAIL_SERVER` (e.g. `smtp.gmail.com`)
-- `MAIL_PORT` (usually `587`)
-- `MAIL_USERNAME` (your email address)
-- `MAIL_PASSWORD` (SMTP password or Gmail app password)
-- `MAIL_FROM` (sender address)
-- `MAIL_USE_TLS` (`True` or `False`)
-- `FLASK_SECRET_KEY` (session secret)
-- `DATABASE_PATH` (optional SQLite path)
-- `GOOGLE_CLIENT_ID`
-- `GOOGLE_CLIENT_SECRET`
-
-## GitHub push instructions
-
-If you want to push this project to GitHub, run:
-
-```powershell
-cd "C:\Users\mhm5\Desktop\expense_tracker_project (1)"
-git init
-git add .
-git commit -m "Initial expense tracker app"
-git branch -M main
-git remote add origin https://github.com/<username>/<repo>.git
-git push -u origin main
-```
-
-Replace `<username>` and `<repo>` with your GitHub account and repository name.
-
-## Notes
-
-- The app is located in the `expense_tracker_project` nested folder.
-- Keep `.env` private and do not push it to GitHub.
-- If Google sign-in is not configured, the login page will fall back to username/password.
+Vercel uses the root `api/index.py` entrypoint and root `requirements.txt` file. The app still stores data in SQLite; on Vercel it defaults to `/tmp/expense_tracker.db`, which is temporary serverless storage. That is fine for demos and class/project review, but a real long-lived app should move the database to hosted storage such as Vercel Postgres, Neon, Supabase.
