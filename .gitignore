@@ -10,3 +10,4 @@ expense_tracker.db
 .DS_Store
 .vscode/
 *.log
+.vercel
