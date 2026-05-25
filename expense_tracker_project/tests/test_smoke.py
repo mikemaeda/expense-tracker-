@@ -1,108 +1,116 @@
+import requests
 import sqlite3
 import time
 from datetime import date
 
-import requests
+BASE = 'http://127.0.0.1:5000'
+DB_PATH = 'expense_tracker.db'
 
-BASE = "http://127.0.0.1:5000"
-DB_PATH = "expense_tracker.db"
+
 
 
 def find_account_id(conn, login):
     cur = conn.cursor()
-    cur.execute("SELECT id FROM accounts WHERE login = ?", (login,))
-    row = cur.fetchone()
-    return row[0] if row else None
+    cur.execute('SELECT id FROM accounts WHERE login = ?', (login,))
+    r = cur.fetchone()
+    return r[0] if r else None
 
 
 def find_expense_by_description(conn, account_id, desc):
     cur = conn.cursor()
-    cur.execute(
-        """
-        SELECT id, amount, description
-        FROM expenses
-        WHERE account_id = ? AND description = ?
-        ORDER BY id DESC
-        LIMIT 1
-        """,
-        (account_id, desc),
-    )
+    cur.execute('SELECT id, amount, description FROM expenses WHERE account_id = ? AND description = ? ORDER BY id DESC LIMIT 1', (account_id, desc))
     return cur.fetchone()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     session = requests.Session()
-    username = f"smoke_user_{int(time.time())}"
-    password = "TestPass123!"
 
-    print("Registering user", username)
-    response = session.post(
-        BASE + "/register",
-        data={
-            "login": username,
-            "email": f"{username}@example.com",
-            "password": password,
-            "password_confirm": password,
-        },
-        allow_redirects=True,
-    )
-    if response.status_code not in (200, 302):
-        raise SystemExit(f"Register failed: {response.status_code}")
+    # 0) Register a fresh test user
+    username = f'smoke_user_{int(time.time())}'
+    password = 'TestPass123!'
+    print('Registering user', username)
+    r = session.post(BASE + '/register', data={'login': username, 'email': 'smoke_user@example.com', 'password': password, 'password_confirm': password}, allow_redirects=True)
+    if r.status_code not in (200, 302):
+        print('Register failed:', r.status_code)
+        raise SystemExit(1)
 
-    print("Logging in as", username)
-    response = session.post(BASE + "/", data={"login": username, "password": password}, allow_redirects=True)
-    if response.status_code != 200:
-        raise SystemExit(f"Login failed: {response.status_code}")
+    # 1) Login
+    print('Logging in as', username)
+    r = session.post(BASE + '/', data={'login': username, 'password': password}, allow_redirects=True)
+    if r.status_code != 200:
+        print('Login request failed:', r.status_code)
+        raise SystemExit(1)
+    print('Logged in, dashboard status:', r.status_code)
 
-    desc = f"smoke-test-{int(time.time())}"
-    response = session.post(
-        BASE + "/add",
-        data={
-            "amount": "12.34",
-            "description": desc,
-            "expense_date": date.today().isoformat(),
-            "category_id": "1",
-        },
-        allow_redirects=True,
-    )
-    if response.status_code != 200:
-        raise SystemExit(f"Add expense failed: {response.status_code}")
+    # 2) Add expense
+    desc = f'smoke-test-{int(time.time())}'
+    payload = {
+        'amount': '12.34',
+        'description': desc,
+        'expense_date': date.today().isoformat(),
+        'category_id': '1'
+    }
+    print('Adding expense', payload)
+    r = session.post(BASE + '/add', data=payload, allow_redirects=True)
+    if r.status_code != 200:
+        print('Add expense failed:', r.status_code)
+        raise SystemExit(1)
+    print('Add returned', r.status_code)
 
+    time.sleep(0.5)
+
+    # 3) Verify DB for new expense
     conn = sqlite3.connect(DB_PATH)
-    account_id = find_account_id(conn, username)
-    if not account_id:
-        raise SystemExit("Test account not found in DB")
+    aid = find_account_id(conn, username)
+    if not aid:
+        print('Test account not found in DB')
+        raise SystemExit(1)
 
-    found = find_expense_by_description(conn, account_id, desc)
+    found = find_expense_by_description(conn, aid, desc)
     if not found:
-        raise SystemExit("Expense not found in DB")
+        print('Expense not found in DB')
+        raise SystemExit(1)
 
     expense_id = found[0]
-    new_desc = desc + "-edited"
-    response = session.post(
-        f"{BASE}/edit/{expense_id}",
-        data={
-            "amount": "15.00",
-            "description": new_desc,
-            "expense_date": date.today().isoformat(),
-            "category_id": "1",
-        },
-        allow_redirects=True,
-    )
-    if response.status_code != 200:
-        raise SystemExit(f"Edit failed: {response.status_code}")
+    print('Found expense id', expense_id)
 
-    if not find_expense_by_description(conn, account_id, new_desc):
-        raise SystemExit("Edited expense not found")
+    # 4) Edit expense
+    new_desc = desc + '-edited'
+    print('Editing expense', expense_id)
+    r = session.post(f"{BASE}/edit/{expense_id}", data={
+        'amount': '15.00',
+        'description': new_desc,
+        'expense_date': date.today().isoformat(),
+        'category_id': '1'
+    }, allow_redirects=True)
+    if r.status_code != 200:
+        print('Edit failed', r.status_code)
+        raise SystemExit(1)
+    print('Edit returned', r.status_code)
 
-    response = session.post(f"{BASE}/delete/{expense_id}", allow_redirects=True)
-    if response.status_code not in (200, 302):
-        raise SystemExit(f"Delete failed: {response.status_code}")
+    time.sleep(0.5)
 
+    # verify edit
+    found2 = find_expense_by_description(conn, aid, new_desc)
+    if not found2:
+        print('Edited expense not found')
+        raise SystemExit(1)
+    print('Edit verified')
+
+    # 5) Delete expense
+    print('Deleting expense', expense_id)
+    r = session.post(f"{BASE}/delete/{expense_id}", allow_redirects=True)
+    if r.status_code not in (200, 302):
+        print('Delete failed', r.status_code)
+        raise SystemExit(1)
+    time.sleep(0.5)
+
+    # verify deletion
     cur = conn.cursor()
-    cur.execute("SELECT id FROM expenses WHERE id = ? AND account_id = ?", (expense_id, account_id))
+    cur.execute('SELECT id FROM expenses WHERE id = ? AND account_id = ?', (expense_id, aid))
     if cur.fetchone():
-        raise SystemExit("Expense still exists after delete")
+        print('Expense still exists after delete')
+        raise SystemExit(1)
 
     conn.close()
-    print("SMOKE TESTS PASSED")
+    print('\nSMOKE TESTS PASSED')

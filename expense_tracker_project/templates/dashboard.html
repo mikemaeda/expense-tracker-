@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Expense Tracker Dashboard</title>
     <link rel="stylesheet" href="/static/style.css">
@@ -15,6 +16,7 @@
         }
     </script>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -25,7 +27,6 @@
             <div class="header-actions">
                 <a class="button button-primary" href="/add">Add Expense</a>
                 <a class="button button-secondary" href="/budgets">Manage Budgets</a>
-                <a class="button button-secondary" href="/export.csv">Export CSV</a>
                 <a class="button button-secondary" href="/logout">Logout</a>
             </div>
         </div>
@@ -35,6 +36,7 @@
                 <div class="stat-label">Total Spending</div>
                 <div class="stat-value">${{ "%.2f"|format(total) }}</div>
             </div>
+
             {% if category_stats %}
             <div class="stat-card">
                 <div class="stat-label">Top Category</div>
@@ -42,10 +44,13 @@
                 <div class="stat-subtext">${{ "%.2f"|format(category_stats[0]['total']) }}</div>
             </div>
             {% endif %}
+
+            {% if expenses %}
             <div class="stat-card">
                 <div class="stat-label">Total Transactions</div>
                 <div class="stat-value">{{ expenses|length }}</div>
             </div>
+            {% endif %}
         </div>
 
         {% if category_stats %}
@@ -69,7 +74,8 @@
                 {% for budget in budget_stats %}
                 <div class="category-item">
                     <span class="category-name">{{ budget['category_name'] }}</span>
-                    <span class="category-amount">${{ "%.2f"|format(budget['spent']) }} / ${{ "%.2f"|format(budget['monthly_limit']) }}</span>
+                    <span class="category-amount">${{ "%.2f"|format(budget['spent']) }} / ${{
+                        "%.2f"|format(budget['monthly_limit']) }}</span>
                 </div>
                 {% endfor %}
             </div>
@@ -84,40 +90,54 @@
                     <select name="category" id="category">
                         <option value="">All Categories</option>
                         {% for cat in categories %}
-                        <option value="{{ cat['id'] }}" {% if selected_category|string == cat['id']|string %}selected{% endif %}>{{ cat['category_name'] }}</option>
+                        <option value="{{ cat['id'] }}" {% if selected_category|string==cat['id']|string %}selected{%
+                            endif %}>
+                            {{ cat['category_name'] }}
+                        </option>
                         {% endfor %}
                     </select>
                 </div>
+
                 <div class="filter-group">
                     <label for="start_date">From Date</label>
                     <input type="date" name="start_date" id="start_date" value="{{ start_date }}">
                 </div>
+
                 <div class="filter-group">
                     <label for="end_date">To Date</label>
                     <input type="date" name="end_date" id="end_date" value="{{ end_date }}">
                 </div>
+
                 <button type="submit" class="button button-primary">Apply Filters</button>
                 <a href="/dashboard" class="button button-secondary">Clear</a>
             </form>
         </div>
 
         <h2>Your Expenses</h2>
+
         {% if expenses %}
         <div class="table-wrapper">
             <table class="expenses-table">
                 <thead>
-                    <tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th><th>Actions</th></tr>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th>Amount</th>
+                        <th>Actions</th>
+                    </tr>
                 </thead>
                 <tbody>
                     {% for expense in expenses %}
                     <tr>
-                        <td>{{ expense[3] }}</td>
-                        <td>{{ expense[2] }}</td>
-                        <td><span class="category-badge">{{ expense[4] }}</span></td>
-                        <td class="amount">${{ "%.2f"|format(expense[1]) }}</td>
-                        <td class="actions">
-                            <a href="/edit/{{ expense[0] }}" class="action-btn edit-btn">Edit</a>
-                            <button onclick="confirmDelete({{ expense[0] }})" class="action-btn delete-btn">Delete</button>
+                        <td data-label="Date">{{ expense[3] }}</td>
+                        <td data-label="Description">{{ expense[2] }}</td>
+                        <td data-label="Category"><span class="category-badge">{{ expense[4] }}</span></td>
+                        <td data-label="Amount" class="amount">${{ "%.2f"|format(expense[1]) }}</td>
+                        <td data-label="Actions" class="actions">
+                            <a href="/edit/{{ expense[0] }}" class="action-btn edit-btn" title="Edit">Edit</a>
+                            <button onclick="confirmDelete({{ expense[0] }})" class="action-btn delete-btn"
+                                title="Delete">Delete</button>
                         </td>
                     </tr>
                     {% endfor %}
@@ -125,8 +145,11 @@
             </table>
         </div>
         {% else %}
-        <div class="empty-state"><p>No expenses found. <a href="/add">Add your first expense</a></p></div>
+        <div class="empty-state">
+            <p>No expenses found. <a href="/add">Add your first expense</a></p>
+        </div>
         {% endif %}
     </div>
 </body>
+
 </html>

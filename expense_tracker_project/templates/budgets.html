@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Manage Budgets</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -17,7 +19,9 @@
         </div>
 
         {% if error %}
-        <div class="error-alert"><strong>Error:</strong> {{ error }}</div>
+        <div class="error-alert">
+            <strong>Error:</strong> {{ error }}
+        </div>
         {% endif %}
 
         <div class="form-wrapper">
@@ -31,13 +35,16 @@
                         {% endfor %}
                     </select>
                 </div>
+
                 <div class="form-group">
                     <label for="monthly_limit">Monthly Budget</label>
                     <div class="input-group">
                         <span class="input-prefix">$</span>
-                        <input type="number" step="0.01" id="monthly_limit" name="monthly_limit" placeholder="0.00" required>
+                        <input type="number" step="0.01" id="monthly_limit" name="monthly_limit" placeholder="0.00"
+                            required>
                     </div>
                 </div>
+
                 <button type="submit" class="button button-primary">Save Budget</button>
             </form>
         </div>
@@ -46,7 +53,11 @@
         <div class="table-wrapper">
             <table class="expenses-table">
                 <thead>
-                    <tr><th>Category</th><th>Limit</th><th>Spent This Month</th></tr>
+                    <tr>
+                        <th>Category</th>
+                        <th>Limit</th>
+                        <th>Spent This Month</th>
+                    </tr>
                 </thead>
                 <tbody>
                     {% for budget in budgets %}
@@ -60,8 +71,11 @@
             </table>
         </div>
         {% else %}
-        <div class="empty-state"><p>No budgets configured yet. Use the form above to set monthly limits.</p></div>
+        <div class="empty-state">
+            <p>No budgets configured yet. Use the form above to set monthly limits.</p>
+        </div>
         {% endif %}
     </div>
 </body>
+
 </html>

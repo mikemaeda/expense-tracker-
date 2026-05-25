@@ -1,19 +1,25 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Expense Tracker Login</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body class="login-body">
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
                 <h1>Expense Tracker</h1>
-                <p class="subtitle">Smart spending management, simplified.</p>
+                <p class="subtitle">
+                    Smart spending management, simplified.
+                </p>
             </div>
 
             {% if error %}
-            <div class="error-alert"><strong>Error:</strong> {{ error }}</div>
+            <div class="error-alert">
+                <strong>Error:</strong> {{ error }}
+            </div>
             {% endif %}
 
             <form method="post" class="login-form">
@@ -21,23 +27,34 @@
                     <label for="login">Username</label>
                     <input type="text" id="login" name="login" placeholder="Enter your username" required autofocus>
                 </div>
+
                 <div class="form-group">
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" placeholder="Enter your password" required>
                 </div>
-                <button type="submit" class="button button-primary">Sign In</button>
+
+                <button type="submit" class="button button-primary">
+                    Sign In
+                </button>
             </form>
 
-            <div class="centered-action">
+            <div style="text-align:center; margin-top:10px;">
                 <a href="/register" class="button button-secondary">Create an account</a>
             </div>
 
             {% if google_login_enabled %}
-            <div class="centered-action">
+            <div style="text-align:center; margin-top:12px;">
                 <a href="/login/google" class="button button-google">Sign in with Google</a>
             </div>
             {% endif %}
+
+            <div class="login-footer">
+                <p class="help-text">
+                    Need help? Contact Mike Maeda
+                </p>
+            </div>
         </div>
     </div>
 </body>
+
 </html>
