@@ -21,23 +21,6 @@ A Flask-based personal expense tracker with authentication, budget monitoring, e
 - SMTP email support via environment variables
 - Vercel deployment
 
-## Setup
-
-1. Open a PowerShell terminal in the repository root:
-   ```powershell
-   cd "C:\Users\mhm5\Desktop\expense_tracker_project (1)"
-   ```
-2. Install dependencies (using the existing virtual environment if available):
-   ```powershell
-   & ".\.venv\Scripts\python.exe" -m pip install -r .\expense_tracker_project\requirements.txt
-   ```
-3. Copy `.env.example` to `.env` inside `expense_tracker_project` and fill in your values.
-4. Run the app:
-   ```powershell
-   & ".\.venv\Scripts\python.exe" .\expense_tracker_project\app.py
-   ```
-5. Open http://127.0.0.1:5000 in your browser.
-
 ## Deployed app
 
 Production URL:
