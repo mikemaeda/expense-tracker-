@@ -19,6 +19,7 @@ A Flask-based personal expense tracker with authentication, budget monitoring, e
 - SQLite
 - Authlib for Google OAuth
 - SMTP email support via environment variables
+- Vercel deployment
 
 ## Setup
 
@@ -37,6 +38,18 @@ A Flask-based personal expense tracker with authentication, budget monitoring, e
    ```
 5. Open http://127.0.0.1:5000 in your browser.
 
+## Deployed app
+
+Production URL:
+
+```text
+https://expense-tracker-app-mauve-gamma.vercel.app
+```
+
+The Vercel project is linked as `expense-tracker-app`.
+
+Vercel uses the root `api/index.py` entrypoint and root `requirements.txt` file. The app still stores data in SQLite; on Vercel it defaults to `/tmp/expense_tracker.db`, which is temporary serverless storage. That is fine for demos and class/project review, but a real long-lived app should move the database to hosted storage such as Vercel Postgres, Neon, Supabase, or Turso.
+
 ## Environment variables
 
 Set values in `expense_tracker_project\.env`:
@@ -48,6 +61,7 @@ Set values in `expense_tracker_project\.env`:
 - `MAIL_FROM` (sender address)
 - `MAIL_USE_TLS` (`True` or `False`)
 - `FLASK_SECRET_KEY` (session secret)
+- `DATABASE_PATH` (optional SQLite path)
 - `GOOGLE_CLIENT_ID`
 - `GOOGLE_CLIENT_SECRET`
 
