@@ -1,119 +1,92 @@
 # Expense Tracker
 
-Expense Tracker is a Flask web application for managing personal spending, monitoring category budgets, and keeping expense history organized in one place. It supports account registration, secure password login, optional Google sign-in, budget alerts, CSV export, and a responsive dashboard for reviewing spending activity.
+A Flask-based personal expense tracker with authentication, budget monitoring, email alerts, and Google sign-in support.
 
-## Live Demo
+**[Try it live](https://expense-tracker-app-mauve-gamma.vercel.app)** - Deployed on Vercel
 
-Production app: https://expense-tracker-app-mauve-gamma.vercel.app
+## What it does
 
-## Features
+- Register and sign in with username/password
+- Sign in with Google OAuth
+- Add, edit, and delete expenses
+- Set category budgets and receive email budget alerts
+- Export expenses to CSV
+- Send welcome emails on account creation
+- Track spending by category and month
 
-- User registration and password-based authentication
-- Optional Google OAuth sign-in
-- Add, edit, delete, and filter expenses
-- Category-based spending summaries
-- Monthly budget tracking by category
-- Email notifications for welcome messages and budget alerts
-- CSV export for expense records
-- Responsive Flask/Jinja interface
-- Vercel deployment support
+## Technology
 
-## Tech Stack
-
-- Python 3.12
+- Python 3
 - Flask
 - SQLite
-- Jinja templates
 - Authlib for Google OAuth
-- SMTP email integration
-- Vercel for deployment
+- SMTP email support via environment variables
+- Vercel deployment
 
-## Project Structure
+## Setup
 
-```text
-.
-├── api/
-│   └── index.py              # Vercel serverless entrypoint
-├── expense_tracker_project/
-│   ├── app.py                # Main Flask application
-│   ├── static/               # CSS styles
-│   ├── templates/            # Jinja HTML templates
-│   ├── migrations/           # Local database migration helpers
-│   ├── scripts/              # Utility scripts
-│   ├── sql/                  # Database schema/sample data
-│   └── tests/                # Smoke test script
-├── requirements.txt          # Root dependencies for Vercel
-├── vercel.json               # Vercel routing config
-└── README.md
-```
-
-## Local Setup
-
-1. Clone the repository:
-
+1. Open a PowerShell terminal in the repository root:
    ```powershell
-   git clone https://github.com/mikemaeda/expense-tracker-.git
-   cd expense-tracker-
+   cd "C:\Users\mhm5\Desktop\expense_tracker_project (1)"
    ```
-
-2. Create and activate a virtual environment:
-
+2. Install dependencies using the existing virtual environment if available:
    ```powershell
-   python -m venv .venv
-   .\.venv\Scripts\Activate.ps1
+   & ".\.venv\Scripts\python.exe" -m pip install -r .\expense_tracker_project\requirements.txt
    ```
-
-3. Install dependencies:
-
+3. Copy `.env.example` to `.env` inside `expense_tracker_project` and fill in your values.
+4. Run the app:
    ```powershell
-   pip install -r requirements.txt
+   & ".\.venv\Scripts\python.exe" .\expense_tracker_project\app.py
    ```
+5. Open http://127.0.0.1:5000 in your browser.
 
-4. Create a local environment file:
+If you copied `.env.example` but have not added real SMTP credentials yet, the app will still create accounts. Welcome and budget email alerts are skipped until valid mail settings are provided.
 
-   ```powershell
-   Copy-Item .\expense_tracker_project\.env.example .\expense_tracker_project\.env
-   ```
+## Deployed app
 
-5. Start the Flask app:
-
-   ```powershell
-   python .\expense_tracker_project\app.py
-   ```
-
-6. Open the app at http://127.0.0.1:5000.
-
-## Environment Variables
-
-Set these values in `expense_tracker_project/.env` for local development, or in the Vercel project settings for production:
-
-| Variable | Purpose |
-| --- | --- |
-| `FLASK_SECRET_KEY` | Secret key used to sign Flask sessions |
-| `DATABASE_PATH` | Optional SQLite database path |
-| `MAIL_SERVER` | SMTP server host |
-| `MAIL_PORT` | SMTP server port, usually `587` |
-| `MAIL_USERNAME` | SMTP username/email |
-| `MAIL_PASSWORD` | SMTP password or app password |
-| `MAIL_FROM` | Sender email address |
-| `MAIL_USE_TLS` | Enables TLS for SMTP |
-| `GOOGLE_CLIENT_ID` | Google OAuth client ID |
-| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
-
-## Deployment
-
-This project is configured for Vercel using `api/index.py` as the serverless Flask entrypoint and `vercel.json` for routing.
-
-The current production deployment is hosted at:
+Production URL:
 
 ```text
 https://expense-tracker-app-mauve-gamma.vercel.app
 ```
 
-## Data Persistence Note
+The Vercel project is linked as `expense-tracker-app`.
 
-The deployed version currently uses SQLite. On Vercel, SQLite is stored in temporary serverless storage, so it is suitable for demos and project review but not ideal for long-term production data. A production-ready version should move persistence to a hosted database such as Vercel Postgres, Neon, Supabase, or Turso.
+Vercel uses the root `api/index.py` entrypoint and root `requirements.txt` file. The app still stores data in SQLite; on Vercel it defaults to `/tmp/expense_tracker.db`, which is temporary serverless storage. That is fine for demos and class/project review, but a real long-lived app should move the database to hosted storage such as Vercel Postgres, Neon, Supabase, or Turso.
 
-## Status
+## Environment variables
 
-The app is deployed and functional. Current priority improvements would be persistent hosted storage, stronger automated tests, and cleaner production email/OAuth configuration.
+Set values in `expense_tracker_project\.env`:
+
+- `MAIL_SERVER` (e.g. `smtp.gmail.com`)
+- `MAIL_PORT` (usually `587`)
+- `MAIL_USERNAME` (your email address)
+- `MAIL_PASSWORD` (SMTP password or Gmail app password)
+- `MAIL_FROM` (sender address)
+- `MAIL_USE_TLS` (`True` or `False`)
+- `FLASK_SECRET_KEY` (session secret)
+- `DATABASE_PATH` (optional SQLite path)
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
+
+## GitHub push instructions
+
+If you want to push this project to GitHub, run:
+
+```powershell
+cd "C:\Users\mhm5\Desktop\expense_tracker_project (1)"
+git init
+git add .
+git commit -m "Initial expense tracker app"
+git branch -M main
+git remote add origin https://github.com/<username>/<repo>.git
+git push -u origin main
+```
+
+Replace `<username>` and `<repo>` with your GitHub account and repository name.
+
+## Notes
+
+- The app is located in the `expense_tracker_project` nested folder.
+- Keep `.env` private and do not push it to GitHub.
+- If Google sign-in is not configured, the login page will fall back to username/password.

@@ -1,6 +1,7 @@
 import sqlite3
+from pathlib import Path
 
-DB = 'expense_tracker.db'
+DB = Path(__file__).resolve().parents[1] / 'expense_tracker.db'
 
 conn = sqlite3.connect(DB)
 cur = conn.cursor()

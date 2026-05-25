@@ -2,9 +2,10 @@ import requests
 import sqlite3
 import time
 from datetime import date
+from pathlib import Path
 
 BASE = 'http://127.0.0.1:5000'
-DB_PATH = 'expense_tracker.db'
+DB_PATH = Path(__file__).resolve().parents[1] / 'expense_tracker.db'
 
 
 
@@ -27,9 +28,10 @@ if __name__ == '__main__':
 
     # 0) Register a fresh test user
     username = f'smoke_user_{int(time.time())}'
+    email = f'{username}@example.com'
     password = 'TestPass123!'
     print('Registering user', username)
-    r = session.post(BASE + '/register', data={'login': username, 'email': 'smoke_user@example.com', 'password': password, 'password_confirm': password}, allow_redirects=True)
+    r = session.post(BASE + '/register', data={'login': username, 'email': email, 'password': password, 'password_confirm': password}, allow_redirects=True)
     if r.status_code not in (200, 302):
         print('Register failed:', r.status_code)
         raise SystemExit(1)

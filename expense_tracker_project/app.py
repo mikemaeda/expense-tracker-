@@ -55,12 +55,24 @@ MAIL_USERNAME = os.getenv("MAIL_USERNAME")
 MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
 MAIL_USE_TLS = os.getenv("MAIL_USE_TLS", "True").lower() in ("1", "true", "yes")
 MAIL_FROM = os.getenv("MAIL_FROM") or MAIL_USERNAME
+PLACEHOLDER_CONFIG_VALUES = {
+    "",
+    "your@gmail.com",
+    "your_app_password",
+    "your_google_client_id",
+    "your_google_client_secret",
+    "super-secret-key",
+}
+
+
+def is_configured_value(value):
+    return bool(value and value.strip() and value.strip() not in PLACEHOLDER_CONFIG_VALUES)
 
 if not IS_VERCEL:
     os.environ.setdefault("OAUTHLIB_INSECURE_TRANSPORT", "1")
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
-GOOGLE_LOGIN_ENABLED = bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)
+GOOGLE_LOGIN_ENABLED = is_configured_value(GOOGLE_CLIENT_ID) and is_configured_value(GOOGLE_CLIENT_SECRET)
 
 oauth = OAuth(app)
 if GOOGLE_LOGIN_ENABLED:
@@ -78,7 +90,7 @@ app.jinja_env.globals["google_login_enabled"] = GOOGLE_LOGIN_ENABLED
 
 
 def send_email(to_email, subject, body):
-    if not MAIL_SERVER or not MAIL_USERNAME or not MAIL_PASSWORD or not MAIL_FROM:
+    if not all(is_configured_value(value) for value in (MAIL_SERVER, MAIL_USERNAME, MAIL_PASSWORD, MAIL_FROM)):
         return False, "SMTP configuration is incomplete. Please set MAIL_SERVER, MAIL_USERNAME, MAIL_PASSWORD and MAIL_FROM."
 
     try:
@@ -260,6 +272,21 @@ def init_db():
         );
         """
     )
+
+    cursor.execute("PRAGMA table_info(accounts)")
+    account_columns = {row["name"] for row in cursor.fetchall()}
+    if "email" not in account_columns:
+        cursor.execute("ALTER TABLE accounts ADD COLUMN email TEXT")
+    if "password_hash" not in account_columns:
+        cursor.execute("ALTER TABLE accounts ADD COLUMN password_hash TEXT")
+
+    try:
+        cursor.execute(
+            "CREATE UNIQUE INDEX IF NOT EXISTS idx_accounts_email_unique ON accounts(email) WHERE email IS NOT NULL"
+        )
+    except sqlite3.IntegrityError:
+        app.logger.warning("Skipping unique email index because duplicate account emails already exist.")
+
     default_categories = [
         "Food",
         "Transportation",

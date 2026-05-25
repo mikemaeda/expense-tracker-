@@ -1,7 +1,11 @@
 import sqlite3
+from pathlib import Path
 
-conn = sqlite3.connect('expense_tracker.db')
+DB = Path(__file__).resolve().parents[1] / 'expense_tracker.db'
+
+conn = sqlite3.connect(DB)
 cur = conn.cursor()
+print(f'database: {DB}')
 print('tables:')
 for row in cur.execute("SELECT name FROM sqlite_master WHERE type='table'"):
     print(row)
